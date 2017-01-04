@@ -1,7 +1,7 @@
 test:
   override:
-    # run unit tests
-    - ./gradlew --console=plain --profile assembleDebug assembleAndroidTest testDevDebugUnitTest
+    # build the app
+    - ./gradlew --console=plain --profile assembleDebug
     - cp -r app/build/outputs/apk $CIRCLE_ARTIFACTS/
 
 # if all tests pass, publish code-coverage and deliver build
