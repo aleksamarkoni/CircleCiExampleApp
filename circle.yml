@@ -1,3 +1,7 @@
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter "build-tools-24.0.2,build-tools-24.0.3,android-24,android-25,extra-android-m2repository"
+
 test:
   override:
     # build the app
