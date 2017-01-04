@@ -32,6 +32,53 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        dev {
+            applicationIdSuffix '.debug'
+
+            // Differentiate builds in Fabric using version-names
+            if (System.env.CI) {
+                // Official CI builds
+                versionNameSuffix '-debug-ci'
+            } else {
+                // Non-CI (personal localhost) builds
+                versionNameSuffix '-debug-adhoc'
+
+                // Disable crashlytics and its build ID generation for non-CI builds
+                // Speeds up incremental rebuilds by avoiding regenerating resources
+                ext.enableCrashlytics = false
+            }
+
+            buildConfigField "String", "BASE_URL", "\"http://dev-api.fubo.tv/v3/\""
+            buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://dev-api.fubo.tv\""
+
+            resValue "string", "auth0_client_id", "9gnk7Cg77AOFuNemS5Kek3qT8HiJ87N1"
+            resValue "string", "auth0_domain", "fubo-dev.auth0.com"
+        }
+        qa {
+            applicationIdSuffix '.qa'
+
+            if (System.env.CI) {
+                // Official CI builds
+                versionNameSuffix '-qa-ci'
+            } else {
+                // Non-CI (personal localhost) builds
+                versionNameSuffix '-qa-adhoc'
+
+                // Disable crashlytics and its build ID generation for non-CI builds
+                // Speeds up incremental rebuilds by avoiding regenerating resources
+                ext.enableCrashlytics = false
+            }
+
+            buildConfigField "String", "BASE_URL", "\"http://qa-api.fubo.tv/v3/\""
+            buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://qa-api.fubo.tv\""
+
+            resValue "string", "auth0_client_id", "RTpfOxSkv1LOIgHlxo2YmxLqUfaSvjaG"
+            resValue "string", "auth0_domain", "fubo-qa.auth0.com"
+        }
+    }
+
 }
 
 dependencies {
