@@ -14,4 +14,4 @@ deployment:
     branch: /.*/
     commands:
       # deliver new build to Fabric
-      - ./gradlew --console=plain crashlyticsUploadDistributionCiDebug crashlyticsUploadDistributionCiQa
+      - ./gradlew --console=plain crashlyticsUploadDistributionCiDebug
