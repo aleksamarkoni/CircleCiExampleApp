@@ -30,7 +30,7 @@ android {
         CiSigningConfig {
             keyAlias System.env.CI_KEY_ALIAS
             keyPassword System.env.CI_KEY_PASSWORD
-            storeFile file('android.jks')
+            storeFile file('../android.jks')
             storePassword System.env.CI_KEYSTORE_PASSWORD
         }
     }
@@ -97,7 +97,9 @@ android {
                 versionNameSuffix '-release-local'
             }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.CiSigningConfig
+            if (System.env.CI) {
+                signingConfig signingConfigs.CiSigningConfig
+            }
         }
     }
 }
