@@ -88,6 +88,7 @@ android {
         }
         release {
             minifyEnabled false
+            applicationIdSuffix '.release'
             // Differentiate builds in Fabric using version-names
             if (System.env.CI) {
                 // Official CI builds
