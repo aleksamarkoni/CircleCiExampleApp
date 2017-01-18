@@ -5,7 +5,7 @@ dependencies:
 test:
   override:
     # build the app
-    - ./gradlew --console=plain --profile assembleDebug
+    - ./gradlew --console=plain --profile assemble
     - cp -r app/build/outputs/apk $CIRCLE_ARTIFACTS/
 
 # if all tests pass, publish code-coverage and deliver build
@@ -14,4 +14,4 @@ deployment:
     branch: /.*/
     commands:
       # deliver new build to Fabric
-      - ./gradlew --console=plain crashlyticsUploadDistributionCiDebug
+      - ./gradlew --console=plain crashlyticsUploadDistributionDebug crashlyticsUploadDistributionRelease

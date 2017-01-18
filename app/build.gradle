@@ -14,90 +14,96 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+// Circle-CI builds get the repo-wide build-number. This guarantees monotonically incrementing versionCodes.
+// Local builds default to versionCode 1.
+def generateVersionCode() {
+    if (System.env.CIRCLE_BUILD_NUM) {
+        return "$System.env.CIRCLE_BUILD_NUM".toInteger()
+    } else {
+        return 1
+    }
+}
+
 
 android {
+    signingConfigs {
+        CiSigningConfig {
+            keyAlias System.env.CI_KEY_ALIAS
+            keyPassword System.env.CI_KEY_PASSWORD
+            storeFile file('android.jks')
+            storePassword System.env.CI_KEYSTORE_PASSWORD
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "24.0.3"
+    if (System.env.CI) {
+        // Official CI builds
+        testBuildType "qa"
+    }
     defaultConfig {
         applicationId "com.example.aleksamarkoni.circleciexampleapp"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 1
+
+        // Use automatically incremented build number from Circle-CI
+        // otherwise non-CI local builds get a low versionCode
+        versionCode generateVersionCode()
+
+        // Semantic Versioning: http://semver.org
+        //TODO add code to get the tag value and use it for the versionName
         versionName "1.0"
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
-            buildConfigField "String", "BASE_URL", "\"http://dev-api.fubo.tv/v3/\""
-            buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://dev-api.fubo.tv\""
-
-            resValue "string", "auth0_client_id", "9gnk7Cg77AOFuNemS5Kek3qT8HiJ87N1"
-            resValue "string", "auth0_domain", "fubo-dev.auth0.com"
-        }
-
-        qa {
-            applicationIdSuffix '.qa'
-            buildConfigField "String", "BASE_URL", "\"http://qa-api.fubo.tv/v3/\""
-            buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://qa-api.fubo.tv\""
-
-            resValue "string", "auth0_client_id", "RTpfOxSkv1LOIgHlxo2YmxLqUfaSvjaG"
-            resValue "string", "auth0_domain", "fubo-qa.auth0.com"
-
-        }
-
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    productFlavors {
-        normal {
             // Differentiate builds in Fabric using version-names
             if (System.env.CI) {
                 // Official CI builds
-                versionNameSuffix '-normal-ci'
+                versionNameSuffix '-debug-ci'
             } else {
                 // Non-CI (personal localhost) builds
-                versionNameSuffix '-normal-local'
-
-                // Disable crashlytics and its build ID generation for non-CI builds
-                // Speeds up incremental rebuilds by avoiding regenerating resources
-                ext.enableCrashlytics = false
+                versionNameSuffix '-debug-local'
             }
+            buildConfigField "String", "BASE_URL", "\"http://dev-api.fubo.tv/v3/\""
+            buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://dev-api.fubo.tv\""
+            resValue "string", "auth0_client_id", "9gnk7Cg77AOFuNemS5Kek3qT8HiJ87N1"
+            resValue "string", "auth0_domain", "fubo-dev.auth0.com"
         }
-        ci {
+        qa {
+            applicationIdSuffix '.qa'
+            // Differentiate builds in Fabric using version-names
             if (System.env.CI) {
                 // Official CI builds
-                versionNameSuffix '-ci-ci'
+                versionNameSuffix '-qa-ci'
             } else {
                 // Non-CI (personal localhost) builds
-                versionNameSuffix '-ci-local'
-
-                // Disable crashlytics and its build ID generation for non-CI builds
-                // Speeds up incremental rebuilds by avoiding regenerating resources
-                ext.enableCrashlytics = false
+                versionNameSuffix '-qa-local'
             }
+            buildConfigField "String", "BASE_URL", "\"http://qa-api.fubo.tv/v3/\""
+            buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://qa-api.fubo.tv\""
+            resValue "string", "auth0_client_id", "RTpfOxSkv1LOIgHlxo2YmxLqUfaSvjaG"
+            resValue "string", "auth0_domain", "fubo-qa.auth0.com"
         }
-        crashlytics {
+        release {
+            minifyEnabled false
+            // Differentiate builds in Fabric using version-names
             if (System.env.CI) {
                 // Official CI builds
-                versionNameSuffix '-crashlytics-ci'
+                versionNameSuffix '-release-ci'
             } else {
                 // Non-CI (personal localhost) builds
-                versionNameSuffix '-crashlytics-local'
-
-                // Disable crashlytics and its build ID generation for non-CI builds
-                // Speeds up incremental rebuilds by avoiding regenerating resources
+                versionNameSuffix '-release-local'
             }
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.CiSigningConfig
         }
     }
-
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
