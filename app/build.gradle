@@ -70,6 +70,9 @@ android {
             buildConfigField "String", "ACCOUNT_BASE_URL", "\"http://dev-api.fubo.tv\""
             resValue "string", "auth0_client_id", "9gnk7Cg77AOFuNemS5Kek3qT8HiJ87N1"
             resValue "string", "auth0_domain", "fubo-dev.auth0.com"
+
+
+            ext.betaDistributionReleaseNotes="Release Notes for the debug."
         }
         qa {
             applicationIdSuffix '.qa'
@@ -101,6 +104,9 @@ android {
             if (System.env.CI) {
                 signingConfig signingConfigs.CiSigningConfig
             }
+
+            ext.betaDistributionReleaseNotes="Release Notes for the release."
+
         }
     }
 }
