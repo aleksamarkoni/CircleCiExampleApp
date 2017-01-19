@@ -17,5 +17,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.d("MainActivity", "This is just to add something");
+        Log.d("MainActivity", "Just another tag for testing");
     }
 }
