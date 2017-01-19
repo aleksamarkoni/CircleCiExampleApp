@@ -42,6 +42,12 @@ android {
             storeFile file('../android.jks')
             storePassword System.env.CI_KEYSTORE_PASSWORD
         }
+        debug {
+            storeFile file("../android.jks")
+            keyAlias 'CircleCiExampleKey'
+            keyPassword 'keypass'
+            storePassword 'keystorepass'
+        }
     }
     compileSdkVersion 25
     buildToolsVersion "24.0.3"
@@ -105,14 +111,13 @@ android {
             if (System.env.CI) {
                 // Official CI builds
                 versionNameSuffix '-release-ci'
+                signingConfig signingConfigs.CiSigningConfig
             } else {
                 // Non-CI (personal localhost) builds
                 versionNameSuffix '-release-local'
+                signingConfig signingConfigs.debug
             }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if (System.env.CI) {
-                signingConfig signingConfigs.CiSigningConfig
-            }
 
             ext.betaDistributionReleaseNotes="Release Notes for the release."
 
